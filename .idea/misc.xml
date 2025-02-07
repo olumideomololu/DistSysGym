@@ -5,6 +5,7 @@
     <option name="originalFiles">
       <list>
         <option value="$PROJECT_DIR$/DistMsgQueue/pom.xml" />
+        <option value="$PROJECT_DIR$/DistKV/pom.xml" />
       </list>
     </option>
   </component>
