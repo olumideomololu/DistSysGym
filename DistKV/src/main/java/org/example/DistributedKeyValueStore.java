@@ -5,7 +5,7 @@ import java.util.concurrent.*;
 
 /**
  * DistributedKeyValueStore.java
- *
+ * <p>
  * This is a simplified simulation of a distributed key-value store using
  * the Raft consensus protocol. Each node runs in its own thread, communicates
  * via in-memory message queues (simulating network messages), and supports basic
@@ -13,7 +13,7 @@ import java.util.concurrent.*;
  * log replication). The leader accepts client commands (of the form "put key value")
  * and replicates them to the followers. Once a log entry is committed (i.e. replicated to
  * a majority), it is applied to each node’s state machine (a simple Map).
- *
+ * <p>
  * Note: This code is for educational/demo purposes and omits many production details.
  */
 public class DistributedKeyValueStore {
@@ -304,9 +304,7 @@ public class DistributedKeyValueStore {
             }
             // In a complete implementation, the leader would initialize nextIndex and matchIndex for each follower.
             // Start a heartbeat task to send empty AppendEntries RPCs.
-            heartbeatTask = scheduler.scheduleAtFixedRate(() -> {
-                sendHeartbeat();
-            }, 0, 500, TimeUnit.MILLISECONDS); // heartbeat every 500ms
+            heartbeatTask = scheduler.scheduleAtFixedRate(this::sendHeartbeat, 0, 500, TimeUnit.MILLISECONDS); // heartbeat every 500ms
         }
 
         /**
@@ -388,7 +386,6 @@ public class DistributedKeyValueStore {
                     heartbeatTask.cancel(true);
                 }
                 resetElectionTimeout();
-                return;
             }
             // In a full implementation, the leader would use these responses to update its replication state.
         }
@@ -452,9 +449,7 @@ public class DistributedKeyValueStore {
             for (RaftNode peer : peers) {
                 if (peer.id == peerId) {
                     // Simulate network delay of 50-150 ms.
-                    scheduler.schedule(() -> {
-                        peer.receiveMessage(message);
-                    }, random.nextInt(100) + 50, TimeUnit.MILLISECONDS);
+                    scheduler.schedule(() -> peer.receiveMessage(message), random.nextInt(100) + 50, TimeUnit.MILLISECONDS);
                     break;
                 }
             }
